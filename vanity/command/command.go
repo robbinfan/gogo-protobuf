@@ -144,6 +144,8 @@ func Generate(req *plugin.CodeGeneratorRequest) *plugin.CodeGeneratorResponse {
 		}
 	}
 
+	var features = uint64(plugin.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
+	g.Response.SupportedFeatures = &features
 	return g.Response
 }
 
