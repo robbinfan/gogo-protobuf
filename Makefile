@@ -36,7 +36,7 @@ SKIPISSUE:="/jsonpb|/test/casttype/|/test/oneof/combos/"
 
 .PHONY: nuke regenerate tests clean install gofmt vet contributors
 
-all: clean install regenerate install tests
+all: clean install regenerate install tests errcheck vet
 
 buildserverall: clean install regenerate install tests vet js purego
 

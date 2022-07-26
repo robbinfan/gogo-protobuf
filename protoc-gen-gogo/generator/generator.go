@@ -1749,7 +1749,7 @@ func (g *Generator) goTag(message *Descriptor, field *descriptor.FieldDescriptor
 		name += ",proto3"
 	}
 	oneof := ""
-	if field.OneofIndex != nil {
+	if field.OneofIndex != nil && field.GetProto3Optional() == false {
 		oneof = ",oneof"
 	}
 	stdtime := ""
@@ -1795,12 +1795,12 @@ func needsStar(field *descriptor.FieldDescriptorProto, proto3 bool, allowOneOf b
 	if !gogoproto.IsNullable(field) {
 		return false
 	}
-	if field.OneofIndex != nil && allowOneOf &&
+	if field.OneofIndex != nil && allowOneOf && field.GetProto3Optional() == false &&
 		(*field.Type != descriptor.FieldDescriptorProto_TYPE_MESSAGE) &&
 		(*field.Type != descriptor.FieldDescriptorProto_TYPE_GROUP) {
 		return false
 	}
-	if proto3 &&
+	if proto3 && field.GetProto3Optional() == false &&
 		(*field.Type != descriptor.FieldDescriptorProto_TYPE_MESSAGE) &&
 		(*field.Type != descriptor.FieldDescriptorProto_TYPE_GROUP) &&
 		!gogoproto.IsCustomType(field) {
@@ -2860,7 +2860,7 @@ func (g *Generator) generateMessage(message *Descriptor) {
 			fieldName = ""
 		}
 
-		oneof := field.OneofIndex != nil && message.allowOneof()
+		oneof := field.OneofIndex != nil && message.allowOneof() && field.GetProto3Optional() == false
 		if oneof && oFields[*field.OneofIndex] == nil {
 			odp := message.OneofDecl[int(*field.OneofIndex)]
 			base := CamelCase(odp.GetName())
