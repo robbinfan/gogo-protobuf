@@ -979,9 +979,9 @@ func (p *marshalto) Generate(file *generator.FileDescriptor) {
 		oneofs := make(map[string]struct{})
 		for i := len(message.Field) - 1; i >= 0; i-- {
 			field := message.Field[i]
-			oneof := field.OneofIndex != nil
+			oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 			if !oneof {
-				proto3 := gogoproto.IsProto3(file.FileDescriptorProto)
+				proto3 := gogoproto.IsProto3(file.FileDescriptorProto) && !field.GetProto3Optional()
 				p.generateField(proto3, numGen, file, message, field)
 			} else {
 				fieldname := p.GetFieldName(message, field)
@@ -1003,7 +1003,7 @@ func (p *marshalto) Generate(file *generator.FileDescriptor) {
 		//Generate MarshalTo methods for oneof fields
 		m := proto.Clone(message.DescriptorProto).(*descriptor.DescriptorProto)
 		for _, field := range m.Field {
-			oneof := field.OneofIndex != nil
+			oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 			if !oneof {
 				continue
 			}

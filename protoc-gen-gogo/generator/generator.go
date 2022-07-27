@@ -2073,7 +2073,7 @@ func (g *Generator) getterDefault(field *descriptor.FieldDescriptorProto, goMess
 	switch *field.Type {
 	case descriptor.FieldDescriptorProto_TYPE_GROUP,
 		descriptor.FieldDescriptorProto_TYPE_MESSAGE:
-		if field.OneofIndex != nil {
+		if field.OneofIndex != nil && !field.GetProto3Optional() {
 			return "nil"
 		} else {
 			if !gogoproto.IsNullable(field) && (gogoproto.IsStdDuration(field) ||
@@ -2469,8 +2469,8 @@ func (g *Generator) generateGet(mc *msgCtx, protoField *descriptor.FieldDescript
 		g.P("return m." + fname)
 		g.Out()
 		g.P("}")
-	} else if !oneof {
-		if mc.message.proto3() {
+	} else if !oneof || protoField.GetProto3Optional() {
+		if mc.message.proto3() && !protoField.GetProto3Optional() {
 			g.P("if m != nil {")
 		} else {
 			g.P("if m != nil && m." + fname + " != nil {")

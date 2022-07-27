@@ -503,7 +503,7 @@ func (p *unmarshal) field(file *generator.FileDescriptor, msg *generator.Descrip
 	repeated := field.IsRepeated()
 	nullable := gogoproto.IsNullable(field)
 	typ := p.noStarOrSliceType(msg, field)
-	oneof := field.OneofIndex != nil
+	oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 	switch *field.Type {
 	case descriptor.FieldDescriptorProto_TYPE_DOUBLE:
 		p.P(`var v uint64`)
@@ -1367,7 +1367,7 @@ func (p *unmarshal) Generate(file *generator.FileDescriptor) {
 		for _, field := range message.Field {
 			fieldname := p.GetFieldName(message, field)
 			errFieldname := fieldname
-			if field.OneofIndex != nil {
+			if field.OneofIndex != nil && !field.GetProto3Optional() {
 				errFieldname = p.GetOneOfFieldName(message, field)
 			}
 			possiblyPacked := field.IsScalar() && field.IsRepeated()
@@ -1444,7 +1444,7 @@ func (p *unmarshal) Generate(file *generator.FileDescriptor) {
 				p.P(`return ` + fmtPkg.Use() + `.Errorf("proto: wrong wireType = %d for field ` + errFieldname + `", wireType)`)
 				p.Out()
 				p.P(`}`)
-				p.field(file, message, field, fieldname, proto3)
+				p.field(file, message, field, fieldname, proto3 && !field.GetProto3Optional())
 			}
 
 			if field.IsRequired() {

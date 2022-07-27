@@ -101,7 +101,8 @@ func NeedsNilCheck(proto3 bool, field *google_protobuf.FieldDescriptorProto) boo
 	if field.IsMessage() || IsCustomType(field) {
 		return nullable
 	}
-	if proto3 {
+
+	if proto3 && !field.GetProto3Optional() {
 		return false
 	}
 	return nullable || *field.Type == google_protobuf.FieldDescriptorProto_TYPE_BYTES

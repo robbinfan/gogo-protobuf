@@ -616,9 +616,9 @@ func (p *size) Generate(file *generator.FileDescriptor) {
 		p.P(`_ = l`)
 		oneofs := make(map[string]struct{})
 		for _, field := range message.Field {
-			oneof := field.OneofIndex != nil
+			oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 			if !oneof {
-				proto3 := gogoproto.IsProto3(file.FileDescriptorProto)
+				proto3 := gogoproto.IsProto3(file.FileDescriptorProto) && !field.GetProto3Optional()
 				p.generateField(proto3, file, message, field, sizeName)
 			} else {
 				fieldname := p.GetFieldName(message, field)
@@ -660,7 +660,7 @@ func (p *size) Generate(file *generator.FileDescriptor) {
 		//Generate Size methods for oneof fields
 		m := proto.Clone(message.DescriptorProto).(*descriptor.DescriptorProto)
 		for _, f := range m.Field {
-			oneof := f.OneofIndex != nil
+			oneof := f.OneofIndex != nil && !f.GetProto3Optional()
 			if !oneof {
 				continue
 			}

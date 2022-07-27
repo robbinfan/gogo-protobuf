@@ -578,7 +578,7 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 				if field.GetNumber() > maxFieldNumber {
 					maxFieldNumber = field.GetNumber()
 				}
-				oneof := field.OneofIndex != nil
+				oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 				if !oneof {
 					if field.IsRequired() || (!gogoproto.IsNullable(field) && !field.IsRepeated()) || (proto3 && !field.IsMessage()) {
 						p.GenerateField(file, message, field)
@@ -679,7 +679,7 @@ func (p *plugin) Generate(file *generator.FileDescriptor) {
 		//Generate NewPopulated functions for oneof fields
 		m := proto.Clone(message.DescriptorProto).(*descriptor.DescriptorProto)
 		for _, f := range m.Field {
-			oneof := f.OneofIndex != nil
+			oneof := f.OneofIndex != nil && !f.GetProto3Optional()
 			if !oneof {
 				continue
 			}

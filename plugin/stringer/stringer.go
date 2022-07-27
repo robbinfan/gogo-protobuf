@@ -233,7 +233,7 @@ func (p *stringer) Generate(file *generator.FileDescriptor) {
 			nullable := gogoproto.IsNullable(field)
 			repeated := field.IsRepeated()
 			fieldname := p.GetFieldName(message, field)
-			oneof := field.OneofIndex != nil
+			oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 			if oneof {
 				if _, ok := oneofs[fieldname]; ok {
 					continue
@@ -292,7 +292,7 @@ func (p *stringer) Generate(file *generator.FileDescriptor) {
 
 		//Generate String methods for oneof fields
 		for _, field := range message.Field {
-			oneof := field.OneofIndex != nil
+			oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 			if !oneof {
 				continue
 			}

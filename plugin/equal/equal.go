@@ -538,7 +538,7 @@ func (p *plugin) generateMessage(file *generator.FileDescriptor, message *genera
 	oneofs := make(map[string]struct{})
 
 	for _, field := range message.Field {
-		oneof := field.OneofIndex != nil
+		oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 		if oneof {
 			fieldname := p.GetFieldName(message, field)
 			if _, ok := oneofs[fieldname]; ok {
@@ -663,7 +663,7 @@ func (p *plugin) generateMessage(file *generator.FileDescriptor, message *genera
 	//Generate Equal methods for oneof fields
 	m := proto.Clone(message.DescriptorProto).(*descriptor.DescriptorProto)
 	for _, field := range m.Field {
-		oneof := field.OneofIndex != nil
+		oneof := field.OneofIndex != nil && !field.GetProto3Optional()
 		if !oneof {
 			continue
 		}
